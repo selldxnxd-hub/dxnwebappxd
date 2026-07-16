@@ -486,7 +486,7 @@ export async function createOrder(order: Order): Promise<void> {
       if (prodSnap.exists()) {
         const prod = prodSnap.data() as Product;
         const newInv = Math.max(0, prod.inventory - item.quantity);
-        await updateDoc(prodRef, { inventory: newInv });
+        await setDoc(prodRef, { inventory: newInv }, { merge: true });
       }
     } catch (e) {
       console.error('Error updating inventory for order item:', e);
@@ -548,7 +548,7 @@ export async function createOrder(order: Order): Promise<void> {
 
 export async function updateOrderStatus(orderId: string, status: Order['status'], paymentStatus: Order['paymentStatus']): Promise<void> {
   const orderRef = doc(db, COLL_ORDERS, orderId);
-  await updateDoc(orderRef, { status, paymentStatus });
+  await setDoc(orderRef, { status, paymentStatus }, { merge: true });
 }
 
 // Pages
@@ -614,10 +614,10 @@ export async function addReview(review: Review): Promise<void> {
       const sum = activeReviews.reduce((acc, r) => acc + r.rating, 0);
       const avg = count > 0 ? Number((sum / count).toFixed(1)) : 5;
 
-      await updateDoc(prodRef, {
+      await setDoc(prodRef, {
         rating: avg,
         reviewsCount: count
-      });
+      }, { merge: true });
     }
   } catch (e) {
     console.error('Error updating product ratings with review:', e);
@@ -637,7 +637,7 @@ export async function addReview(review: Review): Promise<void> {
 
 export async function toggleReviewActive(reviewId: string, active: boolean): Promise<void> {
   const docRef = doc(db, COLL_REVIEWS, reviewId);
-  await updateDoc(docRef, { active });
+  await setDoc(docRef, { active }, { merge: true });
 }
 
 // Notifications
@@ -652,7 +652,7 @@ export async function getNotifications(): Promise<SystemNotification[]> {
 
 export async function markNotificationAsRead(notifId: string): Promise<void> {
   const docRef = doc(db, COLL_NOTIFICATIONS, notifId);
-  await updateDoc(docRef, { read: true });
+  await setDoc(docRef, { read: true }, { merge: true });
 }
 
 export async function deleteNotification(notifId: string): Promise<void> {

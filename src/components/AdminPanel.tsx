@@ -85,6 +85,24 @@ export default function AdminPanel({
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const [actionToasts, setActionToasts] = useState<{ id: string; type: 'success' | 'error'; message: string }[]>([]);
+
+  const showSuccessToast = (msg: string) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setActionToasts(prev => [...prev, { id, type: 'success', message: msg }]);
+    setTimeout(() => {
+      setActionToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
+
+  const showErrorToast = (msg: string) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setActionToasts(prev => [...prev, { id, type: 'error', message: msg }]);
+    setTimeout(() => {
+      setActionToasts(prev => prev.filter(t => t.id !== id));
+    }, 6000);
+  };
+
   // --- FORM STATES ---
   // Product Form (Edit or Create)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -424,10 +442,13 @@ export default function AdminPanel({
 
       await saveProduct(savedProduct);
       setSuccessMsg(`Product "${savedProduct.title}" successfully saved!`);
+      showSuccessToast(`Product "${savedProduct.title}" successfully saved!`);
       handleResetProductForm();
       onRefreshApp(); // trigger catalog refresh
-    } catch (e) {
-      setErrorMsg('Failed to save product specification.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveProduct:", e);
+      setErrorMsg(e?.message || 'Failed to save product specification.');
+      showErrorToast(e?.message || 'Failed to save product specification.');
     } finally {
       setIsActionLoading(false);
     }
@@ -440,9 +461,12 @@ export default function AdminPanel({
     try {
       await deleteProduct(id);
       setSuccessMsg('Product specification deleted successfully.');
+      showSuccessToast('Product specification deleted successfully.');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to delete product.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleDeleteProduct:", e);
+      setErrorMsg(e?.message || 'Failed to delete product.');
+      showErrorToast(e?.message || 'Failed to delete product.');
     } finally {
       setIsActionLoading(false);
     }
@@ -468,9 +492,12 @@ export default function AdminPanel({
       setCatName('');
       setCatDesc('');
       setSuccessMsg('Category successfully added.');
+      showSuccessToast('Category successfully added.');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to save category.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveCategory:", e);
+      setErrorMsg(e?.message || 'Failed to save category.');
+      showErrorToast(e?.message || 'Failed to save category.');
     } finally {
       setIsActionLoading(false);
     }
@@ -483,9 +510,12 @@ export default function AdminPanel({
     try {
       await deleteCategory(id);
       setSuccessMsg('Category deleted successfully.');
+      showSuccessToast('Category deleted successfully.');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to delete category.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleDeleteCategoryClick:", e);
+      setErrorMsg(e?.message || 'Failed to delete category.');
+      showErrorToast(e?.message || 'Failed to delete category.');
     } finally {
       setIsActionLoading(false);
     }
@@ -522,10 +552,12 @@ export default function AdminPanel({
       setAreaEnabled(true);
       setEditingArea(null);
       setSuccessMsg(editingArea ? 'Delivery Area successfully updated.' : 'Delivery Area successfully created.');
+      showSuccessToast(editingArea ? 'Delivery Area successfully updated.' : 'Delivery Area successfully created.');
       onRefreshApp();
-    } catch (e) {
-      console.error(e);
-      setErrorMsg('Failed to save delivery area.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveDeliveryArea:", e);
+      setErrorMsg(e?.message || 'Failed to save delivery area.');
+      showErrorToast(e?.message || 'Failed to save delivery area.');
     } finally {
       setIsActionLoading(false);
     }
@@ -538,10 +570,12 @@ export default function AdminPanel({
     try {
       await deleteDeliveryArea(id);
       setSuccessMsg('Delivery Area deleted successfully.');
+      showSuccessToast('Delivery Area deleted successfully.');
       onRefreshApp();
-    } catch (e) {
-      console.error(e);
-      setErrorMsg('Failed to delete delivery area.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleDeleteDeliveryArea:", e);
+      setErrorMsg(e?.message || 'Failed to delete delivery area.');
+      showErrorToast(e?.message || 'Failed to delete delivery area.');
     } finally {
       setIsActionLoading(false);
     }
@@ -558,8 +592,11 @@ export default function AdminPanel({
         
       await updateOrderStatus(orderId, newStatus, newPaymentStatus);
       setSuccessMsg(`Order ${orderId} updated to "${newStatus}"!`);
-    } catch (e) {
-      setErrorMsg('Failed to update order status.');
+      showSuccessToast(`Order ${orderId} updated to "${newStatus}"!`);
+    } catch (e: any) {
+      console.error("Firebase Error in handleUpdateOrderStatus:", e);
+      setErrorMsg(e?.message || 'Failed to update order status.');
+      showErrorToast(e?.message || 'Failed to update order status.');
     } finally {
       setIsActionLoading(false);
     }
@@ -588,8 +625,11 @@ export default function AdminPanel({
       setCpValue('');
       setCpMinOrder('');
       setSuccessMsg(`Coupon "${newCoupon.code}" added successfully.`);
-    } catch (e) {
-      setErrorMsg('Failed to save coupon.');
+      showSuccessToast(`Coupon "${newCoupon.code}" added successfully.`);
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveCoupon:", e);
+      setErrorMsg(e?.message || 'Failed to save coupon.');
+      showErrorToast(e?.message || 'Failed to save coupon.');
     } finally {
       setIsActionLoading(false);
     }
@@ -601,8 +641,11 @@ export default function AdminPanel({
     try {
       await deleteCoupon(id);
       setSuccessMsg('Discount coupon deactivated.');
-    } catch (e) {
-      setErrorMsg('Failed to delete coupon.');
+      showSuccessToast('Discount coupon deactivated.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleDeleteCouponClick:", e);
+      setErrorMsg(e?.message || 'Failed to delete coupon.');
+      showErrorToast(e?.message || 'Failed to delete coupon.');
     } finally {
       setIsActionLoading(false);
     }
@@ -615,9 +658,12 @@ export default function AdminPanel({
     try {
       await toggleReviewActive(id, !currentActive);
       setSuccessMsg('Review approval status updated.');
+      showSuccessToast('Review approval status updated.');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to moderate review.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleToggleReview:", e);
+      setErrorMsg(e?.message || 'Failed to moderate review.');
+      showErrorToast(e?.message || 'Failed to moderate review.');
     } finally {
       setIsActionLoading(false);
     }
@@ -657,6 +703,7 @@ export default function AdminPanel({
 
       await addReview(newReview);
       setFakeReviewSuccess('Review created and ratings synchronized successfully!');
+      showSuccessToast('Review created successfully!');
       
       // Reset form fields
       setFakeReviewUserName('');
@@ -665,9 +712,10 @@ export default function AdminPanel({
       
       // Trigger update
       onRefreshApp();
-    } catch (err) {
-      console.error(err);
-      setFakeReviewError('Failed to create fake review.');
+    } catch (err: any) {
+      console.error("Firebase Error in handleAddFakeReview:", err);
+      setFakeReviewError(err?.message || 'Failed to create fake review.');
+      showErrorToast(err?.message || 'Failed to create fake review.');
     } finally {
       setFakeReviewIsSubmitting(false);
     }
@@ -715,9 +763,12 @@ export default function AdminPanel({
 
       await updateThemeConfig(updatedTheme);
       setSuccessMsg('Visual Theme successfully customized! Refreshing storefront layouts.');
+      showSuccessToast('Visual Theme successfully customized!');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to update theme configuration.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveTheme:", e);
+      setErrorMsg(e?.message || 'Failed to update theme configuration.');
+      showErrorToast(e?.message || 'Failed to update theme configuration.');
     } finally {
       setIsActionLoading(false);
     }
@@ -769,9 +820,12 @@ export default function AdminPanel({
 
       await updateSystemSettings(updatedSettings);
       setSuccessMsg('Bangladesh Localization & System parameters saved successfully.');
+      showSuccessToast('Settings saved successfully.');
       onRefreshApp();
-    } catch (e) {
-      setErrorMsg('Failed to update system settings.');
+    } catch (e: any) {
+      console.error("Firebase Error in handleSaveSettings:", e);
+      setErrorMsg(e?.message || 'Failed to update system settings.');
+      showErrorToast(e?.message || 'Failed to update system settings.');
     } finally {
       setIsActionLoading(false);
     }
@@ -3666,6 +3720,36 @@ export default function AdminPanel({
                 View Order
               </button>
             </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Action Success/Error Toasts */}
+      <div className="fixed bottom-4 right-4 z-50 space-y-3 max-w-sm w-full pointer-events-none">
+        {actionToasts.map(t => (
+          <div 
+            key={t.id}
+            className={`pointer-events-auto border rounded-xl p-4 shadow-2xl flex items-start space-x-3 text-xs text-left text-white animate-slide-in ${
+              t.type === 'success' ? 'bg-slate-900 border-emerald-500/30' : 'bg-slate-900 border-red-500/30'
+            }`}
+          >
+            {t.type === 'success' ? (
+              <CheckCircle className="h-5 w-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-slate-100">
+                {t.type === 'success' ? 'SUCCESS' : 'ERROR'}
+              </p>
+              <p className="text-slate-300 mt-1">{t.message}</p>
+            </div>
+            <button 
+              onClick={() => setActionToasts(prev => prev.filter(x => x.id !== t.id))}
+              className="text-slate-500 hover:text-white flex-shrink-0"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         ))}
       </div>

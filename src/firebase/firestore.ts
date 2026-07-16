@@ -274,7 +274,7 @@ export async function createOrder(order: Order): Promise<void> {
 
 export async function updateOrderStatus(orderId: string, status: Order['status'], paymentStatus: Order['paymentStatus']): Promise<void> {
   const orderRef = doc(db, COLL_ORDERS, orderId);
-  await updateDoc(orderRef, { status, paymentStatus });
+  await setDoc(orderRef, { status, paymentStatus }, { merge: true });
   await addAuditLog('ORDER_STATUS_UPDATE', 'Admin', `Order ${orderId} updated to Status: ${status}, Payment: ${paymentStatus}`);
 }
 
@@ -314,10 +314,10 @@ export async function addReview(review: Review): Promise<void> {
     const sum = list.reduce((acc, r) => acc + r.rating, 0);
     const avg = count > 0 ? Number((sum / count).toFixed(1)) : 5;
     
-    await updateDoc(prodRef, {
+    await setDoc(prodRef, {
       rating: avg,
       reviewsCount: count
-    });
+    }, { merge: true });
   }
 
   // Log and Notify
@@ -360,7 +360,7 @@ export function subscribeNotifications(callback: (notifications: SystemNotificat
 }
 
 export async function markNotificationAsRead(notifId: string): Promise<void> {
-  await updateDoc(doc(db, COLL_NOTIFICATIONS, notifId), { read: true });
+  await setDoc(doc(db, COLL_NOTIFICATIONS, notifId), { read: true }, { merge: true });
 }
 
 export async function deleteNotification(notifId: string): Promise<void> {

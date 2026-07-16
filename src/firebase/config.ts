@@ -33,8 +33,10 @@ if (!import.meta.env.VITE_FIREBASE_API_KEY) {
 // Initialize Firebase once
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Get Firestore with explicit Database ID
-const db = getFirestore(app, firestoreDatabaseId);
+// Get Firestore with explicit Database ID, or fall back to standard default database if (default) is specified
+const db = firestoreDatabaseId && firestoreDatabaseId !== "(default)"
+  ? getFirestore(app, firestoreDatabaseId)
+  : getFirestore(app);
 
 // Get Firebase Auth
 const auth = getAuth(app);

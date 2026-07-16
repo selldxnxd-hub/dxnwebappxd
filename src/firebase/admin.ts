@@ -4,7 +4,7 @@
  */
 
 import { auth, db } from './config';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { SystemSettings } from '../types';
 
 /**
@@ -30,9 +30,9 @@ export async function verifyAdminPin(pin: string): Promise<boolean> {
  */
 export async function updateAdminPin(newPin: string): Promise<void> {
   try {
-    await updateDoc(doc(db, 'settings', 'config'), {
+    await setDoc(doc(db, 'settings', 'config'), {
       adminPin: newPin
-    });
+    }, { merge: true });
   } catch (err) {
     console.error('Failed to rotate admin security pin:', err);
     throw err;
