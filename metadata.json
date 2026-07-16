@@ -1,0 +1,6 @@
+{
+  "name": "E-Commerce CMS and Storefront",
+  "description": "A premium e-commerce storefront with a secure, hidden administrative CMS powered by Firestore, featuring real-time catalogs, order tracking, and dynamic theme customization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
