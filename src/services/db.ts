@@ -317,7 +317,7 @@ export async function getSystemSettings(): Promise<SystemSettings> {
 
 export async function updateSystemSettings(settings: Partial<SystemSettings>): Promise<void> {
   const docRef = doc(db, COLL_SETTINGS, 'config');
-  await updateDoc(docRef, settings);
+  await setDoc(docRef, settings, { merge: true });
 }
 
 // Theme Configurations
@@ -343,7 +343,7 @@ export async function getThemeConfig(): Promise<ThemeConfig> {
 
 export async function updateThemeConfig(theme: Partial<ThemeConfig>): Promise<void> {
   const docRef = doc(db, COLL_THEME, 'config');
-  await updateDoc(docRef, theme);
+  await setDoc(docRef, theme, { merge: true });
 }
 
 // Products
